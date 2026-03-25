@@ -3,10 +3,7 @@
     "beehive": {
       "command": "npx",
       "args": ["tsx", "src/index.ts"],
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "SECRET_KEY": "COLE_SUA_CHAVE_BEEHIVE_AQUI"
-      }
+      "cwd": "/caminho/absoluto/para/beehivehub-mcp"
     }
   }
 }
