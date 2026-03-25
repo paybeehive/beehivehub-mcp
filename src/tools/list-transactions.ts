@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const ListTransactionsInputSchema = z.object({
-  id: z.number().int().optional().describe("ID numérico da transação. Omita para retornar todas."),
   paymentMethods: z.string().optional().describe("Método de pagamento (ex: pix, credit_card, boleto)."),
   status: z.string().optional().describe("Status da transação (ex: paid, waiting_payment, refunded)."),
   deliveryStatus: z.string().optional().describe("Status de entrega."),
@@ -21,7 +20,6 @@ export type BeehiveClientForList = {
 
 export function buildListTransactionsQuery(args: ListTransactionsInput): string {
   const params = new URLSearchParams();
-  if (args.id !== undefined && args.id !== null) params.set("id", String(args.id));
   if (args.paymentMethods != null && args.paymentMethods !== "") params.set("paymentMethods", args.paymentMethods);
   if (args.status != null && args.status !== "") params.set("status", args.status);
   if (args.deliveryStatus != null && args.deliveryStatus !== "") params.set("deliveryStatus", args.deliveryStatus);
@@ -63,7 +61,7 @@ export function registerListTransactions(server: any, client: BeehiveClientForLi
     {
       title: "Listar transações",
       description:
-        "Lista transações na API Beehive. Todos os filtros são opcionais — chame sem argumentos para retornar todas as transações. Filtros disponíveis: id, paymentMethods, status, deliveryStatus, installments, name, email, documentNumber, phone, traceable.",
+        "Lista transações na API Beehive. Todos os filtros são opcionais — chame sem argumentos para retornar todas as transações. Para buscar por ID específico, use get_transaction. Filtros disponíveis: paymentMethods, status, deliveryStatus, installments, name, email, documentNumber, phone, traceable.",
       inputSchema: ListTransactionsInputSchema,
     },
     async (args: unknown) => {
