@@ -1,16 +1,16 @@
 import { z } from "zod";
 
 export const ListTransactionsInputSchema = z.object({
-  id: z.number().int().optional(),
-  paymentMethods: z.string().optional(),
-  status: z.string().optional(),
-  deliveryStatus: z.string().optional(),
-  installments: z.string().optional(),
-  name: z.string().optional(),
-  email: z.string().optional(),
-  documentNumber: z.string().optional(),
-  phone: z.string().optional(),
-  traceable: z.boolean().optional(),
+  id: z.number().int().positive().optional().describe("ID numérico da transação. Omita para retornar todas."),
+  paymentMethods: z.string().optional().describe("Método de pagamento (ex: pix, credit_card, boleto)."),
+  status: z.string().optional().describe("Status da transação (ex: paid, waiting_payment, refunded)."),
+  deliveryStatus: z.string().optional().describe("Status de entrega."),
+  installments: z.string().optional().describe("Número de parcelas."),
+  name: z.string().optional().describe("Nome do cliente."),
+  email: z.string().optional().describe("Email do cliente."),
+  documentNumber: z.string().optional().describe("CPF ou CNPJ do cliente."),
+  phone: z.string().optional().describe("Telefone do cliente."),
+  traceable: z.boolean().optional().describe("Filtrar apenas transações rastreáveis."),
 });
 
 export type ListTransactionsInput = z.infer<typeof ListTransactionsInputSchema>;
@@ -21,7 +21,7 @@ export type BeehiveClientForList = {
 
 export function buildListTransactionsQuery(args: ListTransactionsInput): string {
   const params = new URLSearchParams();
-  if (args.id !== undefined && args.id !== null) params.set("id", String(args.id));
+  if (args.id !== undefined && args.id !== null && args.id > 0) params.set("id", String(args.id));
   if (args.paymentMethods != null && args.paymentMethods !== "") params.set("paymentMethods", args.paymentMethods);
   if (args.status != null && args.status !== "") params.set("status", args.status);
   if (args.deliveryStatus != null && args.deliveryStatus !== "") params.set("deliveryStatus", args.deliveryStatus);
@@ -63,7 +63,7 @@ export function registerListTransactions(server: any, client: BeehiveClientForLi
     {
       title: "Listar transações",
       description:
-        "Lista transações na API Beehive com filtros opcionais (id, paymentMethods, status, deliveryStatus, installments, name, email, documentNumber, phone, traceable). GET /transactions.",
+        "Lista transações na API Beehive. Todos os filtros são opcionais — chame sem argumentos para retornar todas as transações. Filtros disponíveis: id, paymentMethods, status, deliveryStatus, installments, name, email, documentNumber, phone, traceable.",
       inputSchema: ListTransactionsInputSchema,
     },
     async (args: unknown) => {
